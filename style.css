@@ -1,10 +1,27 @@
 /* Setup */
-body{
-  padding: 25px;
+body {
+    padding: 25px;
 }
 
-.board { border-spacing: 0; border-collapse: collapse; }
-.board th { padding: 10px; }
-.board td { border: 1px solid; width: 50px; height: 50px; }
-.white { background: #eee; }
-.black { background: #000; }
+.board {
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+.board th {
+    padding: 10px;
+}
+
+.board td {
+    border: 1px solid;
+    width: 50px;
+    height: 50px;
+}
+
+.light {
+    background: #eeeed2;
+}
+
+.dark {
+    background: #769656;
+}
