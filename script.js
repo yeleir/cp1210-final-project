@@ -32,13 +32,19 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Move pieces
             currentCell.addEventListener('click', () => {
-                if (selectedPeice) {
+                const hasPeice = currentCell.textContent !== "";
+                if (selectedPeice && currentCell !== selectedPeice){
                     currentCell.textContent = selectedPeice.textContent;
-                    selectedPeice.textContent='';
+                    selectedPeice.textContent="";
                     selectedPeice.classList.remove('selected');
-                    selectedPeice = null
-                } else if (currentCell.textContent !== null) {
-                    selectedPeice = currentCell;
+                    selectedPeice = null;
+                }
+                if (hasPeice) {
+                    if (selectedPeice) {
+                        selectedPeice.classList.remove('selected');
+
+                    }
+                    selectedPeice = currentCell
                     currentCell.classList.add('selected');
                 }
             })
