@@ -1,6 +1,11 @@
 /* Setup */
-body {
-    padding: 25px;
+body { 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh;
+  margin: 0;
 }
 
 .board {
@@ -9,13 +14,13 @@ body {
 }
 
 .board th {
-    padding: 10px;
+    padding: 12px;
 }
 
 .board td {
     border: 1px solid;
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
 }
 
 .light {
