@@ -30,3 +30,7 @@ body {
 .dark {
     background: #769656;
 }
+
+.selected {
+    background-color: #baca44 !important;
+}
