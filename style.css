@@ -1,12 +1,12 @@
 /* Setup */
-body { 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 90vh;
-  margin: 0;
-  background-color: lightgrey;
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    margin: 0;
+    background-color: lightgrey;
 }
 
 .board {
@@ -33,5 +33,30 @@ body {
 }
 
 .selected {
-    background-color: #baca44 !important;
+    background-color: #baca44;
+}
+
+#clockContainer {
+    display: flex;
+    justify-content: center;
+    width: 300px;
+    margin-bottom: 10px;
+    margin-left: 135px;
+}
+
+.clock {
+    padding: 10px 20px;
+    background: #222;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.active {
+    background: #4caf50;
+}
+
+#turn-display {
+    margin-left: 165px;
 }
