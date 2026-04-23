@@ -57,6 +57,18 @@ body {
     background: #4caf50;
 }
 
-#turn-display {
-    margin-left: 165px;
+#turnDisplay {
+    margin-left: 170px;
+}
+
+#resetButton {
+    display: block;
+    margin-left: 216px;
+    padding: 10px 20px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
 }

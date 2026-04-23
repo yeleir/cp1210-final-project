@@ -26,20 +26,15 @@ function formatTime(t) {
     let minutes = Math.floor(t / 60);
     let seconds = t % 60;
     let secondString;
-
     if (seconds < 10) {
-        secondString = "0" + seconds;
-    } else {
-        secondString = seconds;
+        seconds = "0" + seconds;
     }
-
-    return minutes + ":" + secondString;
+    return minutes + ":" + seconds;
 }
 
 function updateClocks() {
     document.getElementById("whiteClock").textContent = formatTime(whiteTime);
     document.getElementById("blackClock").textContent = formatTime(blackTime);
-
     if (currentTurn === "white") {
         document.getElementById("whiteClock").classList.add("active");
         document.getElementById("blackClock").classList.remove("active");
@@ -53,17 +48,13 @@ function runTimer() {
     if (timer !== null) {
         return;
     }
-
     timer = setInterval(function () {
-
         if (currentTurn === "white") {
             whiteTime = whiteTime - 1;
-
             if (whiteTime <= 0) {
                 clearInterval(timer);
                 alert("Black wins on time");
             }
-
         } else {
             blackTime = blackTime - 1;
 
@@ -72,10 +63,44 @@ function runTimer() {
                 alert("White wins on time");
             }
         }
-
         updateClocks();
-
     }, 1000);
+}
+
+function setupBoard() {
+    const rows = document.querySelectorAll('.board tr:not(:first-child)');
+    for (let i = 0; i < 8; i++) {
+        const cells = rows[i].querySelectorAll('td');
+        for (let j = 0; j < 8; j++) {
+            const symbol = initialBoard[i][j];
+            const cell = cells[j];
+
+            cell.classList.remove('selected');
+            cell.textContent = pieces[symbol];
+
+            if (symbol !== '') {
+                if (symbol === symbol.toUpperCase()) {
+                    cell.dataset.pieceColor = 'white';
+                } else {
+                    cell.dataset.pieceColor = 'black';
+                }
+            } else {
+                delete cell.dataset.pieceColor;
+            }
+        }
+    }
+}
+
+function resetGame() {
+    clearInterval(timer);
+    timer = null;
+    whiteTime = 300;
+    blackTime = 300;
+    currentTurn = 'white';
+    selectedPiece = null;
+    document.getElementById('turnDisplay').textContent = "Current Turn: White";
+    updateClocks();
+    setupBoard();
 }
 
 function switchTurn() {
@@ -90,35 +115,22 @@ function switchTurn() {
 
 document.addEventListener('DOMContentLoaded', () => {
     const rows = document.querySelectorAll('.board tr:not(:first-child)');
-    const turnDisplay = document.getElementById('turn-display');
+    const turnDisplay = document.getElementById('turnDisplay');
+    const resetButton = document.getElementById('resetButton');
 
-    initialBoard.forEach((rowData, rowIndex) => {
-        const cells = rows[rowIndex].querySelectorAll('td');
+    resetButton.addEventListener('click', resetGame);
 
-        rowData.forEach((pieceSymbol, colIndex) => {
-            const currentCell = cells[colIndex];
+    for (let i = 0; i < 8; i++) {
+        const cells = rows[i].querySelectorAll('td');
+        for (let j = 0; j < 8; j++) {
+            const currentCell = cells[j];
 
-            currentCell.textContent = pieces[pieceSymbol];
             currentCell.style.fontSize = '45px';
             currentCell.style.textAlign = 'center';
             currentCell.style.cursor = 'pointer';
 
-            if (pieceSymbol !== '') {
-                let pieceColor = '';
-
-                if (pieceSymbol === pieceSymbol.toUpperCase()) {
-                    pieceColor = 'white';
-                } else {
-                    pieceColor = 'black';
-                }
-
-                currentCell.dataset.pieceColor = pieceColor;
-            }
-
             currentCell.addEventListener('click', () => {
-
                 if (selectedPiece) {
-
                     if (currentCell.dataset.pieceColor === currentTurn) {
                         selectedPiece.classList.remove('selected');
                         selectedPiece = currentCell;
@@ -128,31 +140,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     currentCell.textContent = selectedPiece.textContent;
                     currentCell.dataset.pieceColor = selectedPiece.dataset.pieceColor;
-
                     selectedPiece.textContent = '';
                     delete selectedPiece.dataset.pieceColor;
                     selectedPiece.classList.remove('selected');
                     selectedPiece = null;
 
                     runTimer();
-                    switchTurn();
 
                     if (currentTurn === "white") {
-                        turnDisplay.textContent = "Current Turn: White";
-                    } else {
+                        currentTurn = "black";
                         turnDisplay.textContent = "Current Turn: Black";
+                    } else {
+                        currentTurn = "white";
+                        turnDisplay.textContent = "Current Turn: White";
                     }
+                    updateClocks();
 
                 } else if (currentCell.textContent !== '') {
-
                     if (currentCell.dataset.pieceColor === currentTurn) {
                         selectedPiece = currentCell;
                         currentCell.classList.add('selected');
                     }
                 }
             });
-        });
-    });
-
+        };
+    };
+    setupBoard();
     updateClocks();
 });
