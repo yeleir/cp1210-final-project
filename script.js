@@ -163,6 +163,8 @@ function resetGame() {
     currentTurn = 'white';
     selectedPiece = null;
     document.getElementById('turnDisplay').textContent = "Current Turn: White";
+    document.getElementById('startMenu').classList.remove('hidden'); 
+    document.getElementById('clockContainer').style.visibility = 'hidden';
     updateClocks();
     setupBoard();
 }
@@ -238,6 +240,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         return;
                     }
 
+
+                    if (currentCell.textContent === '♚' || currentCell.textContent === '♔') {
+                        const winner = currentTurn.charAt(0).toUpperCase() + currentTurn.slice(1);
+                        alert(`Checkmate! ${winner} captured the King and wins the game!`);
+                        resetGame(); 
+                        return; 
+                    }
+            
 
                     currentCell.textContent = selectedPiece.textContent;
                     currentCell.dataset.pieceColor = selectedPiece.dataset.pieceColor;
