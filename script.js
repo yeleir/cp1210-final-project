@@ -1,19 +1,19 @@
 const pieces = {
-    r: 'images/black-rook.svg', 
-    n: 'images/black-knight.svg', 
-    b: 'images/black-bishop.svg', 
-    q: 'images/black-queen.svg', 
-    k: 'images/black-king.svg', 
+    r: 'images/black-rook.svg',
+    n: 'images/black-knight.svg',
+    b: 'images/black-bishop.svg',
+    q: 'images/black-queen.svg',
+    k: 'images/black-king.svg',
     p: 'images/black-pawn.svg',
-    
-    R: 'images/white-rook.svg', 
-    N: 'images/white-knight.svg', 
-    B: 'images/white-bishop.svg', 
-    Q: 'images/white-queen.svg', 
-    K: 'images/white-king.svg', 
+
+    R: 'images/white-rook.svg',
+    N: 'images/white-knight.svg',
+    B: 'images/white-bishop.svg',
+    Q: 'images/white-queen.svg',
+    K: 'images/white-king.svg',
     P: 'images/white-pawn.svg',
-    
-    '': '' 
+
+    '': ''
 };
 
 const initialBoard = [
@@ -36,7 +36,7 @@ let selectedRow = null;
 let selectedCol = null;
 let currentTurn = 'white';
 let isBlitz = false;
-let enPassantTarget = null; 
+let enPassantTarget = null;
 
 function isPathClear(startRow, startCol, endRow, endCol) {
     const rowStep = (startRow === endRow) ? 0 : (endRow > startRow ? 1 : -1);
@@ -61,7 +61,7 @@ function isPathClear(startRow, startCol, endRow, endCol) {
 function isValidMove(piece, startRow, startCol, endRow, endCol, isCapture, pieceColor) {
     const rowDiff = Math.abs(startRow - endRow);
     const colDiff = Math.abs(startCol - endCol);
-    const type = piece.toLowerCase(); 
+    const type = piece.toLowerCase();
 
     if (type === 'r') {
         if (startRow === endRow || startCol === endCol) return isPathClear(startRow, startCol, endRow, endCol);
@@ -80,17 +80,15 @@ function isValidMove(piece, startRow, startCol, endRow, endCol, isCapture, piece
     }
     if (type === 'k') {
         if (rowDiff <= 1 && colDiff <= 1) return true;
-        
-        // CASTLING 
+
         if (rowDiff === 0 && colDiff === 2) {
-            const rookCol = (endCol > startCol) ? 7 : 0; //  fiind corner Rook
+            const rookCol = (endCol > startCol) ? 7 : 0;
             const rows = document.querySelectorAll('.board tr:not(:first-child)');
             const kingCell = rows[startRow].querySelectorAll('td')[startCol];
             const rookCell = rows[startRow].querySelectorAll('td')[rookCol];
-            
-            // if neither has moved, and the path between them is empty:
-            if (kingCell.dataset.hasMoved === 'false' && 
-                rookCell && rookCell.dataset.hasMoved === 'false' && 
+
+            if (kingCell.dataset.hasMoved === 'false' &&
+                rookCell && rookCell.dataset.hasMoved === 'false' &&
                 rookCell.dataset.pieceSymbol.toLowerCase() === 'r') {
                 return isPathClear(startRow, startCol, startRow, rookCol);
             }
@@ -108,17 +106,15 @@ function isValidMove(piece, startRow, startCol, endRow, endCol, isCapture, piece
         if (isCapture && rowDiff === 1 && endRow === startRow + direction) {
             return true;
         }
-        // EN PASSANT LEGALITY
         if (!isCapture && rowDiff === 1 && colDiff === 1 && endRow === startRow + direction) {
             if (enPassantTarget && enPassantTarget.row === endRow && enPassantTarget.col === endCol) {
-                return true; 
+                return true;
             }
         }
         return false;
     }
     return false;
 }
-
 
 function formatTime(t) {
     let minutes = Math.floor(t / 60);
@@ -172,21 +168,21 @@ function setupBoard() {
 
             cell.classList.remove('selected');
 
-           if (symbol !== '') {
+            if (symbol !== '') {
                 cell.innerHTML = `<img src="${pieces[symbol]}" style="width: 45px; height: 45px; pointer-events: none;">`;
                 cell.dataset.pieceSymbol = symbol;
-                cell.dataset.hasMoved = 'false'; 
-                
+                cell.dataset.hasMoved = 'false';
+
                 if (symbol === symbol.toUpperCase()) {
                     cell.dataset.pieceColor = 'white';
                 } else {
                     cell.dataset.pieceColor = 'black';
                 }
             } else {
-                cell.innerHTML = ''; 
+                cell.innerHTML = '';
                 delete cell.dataset.pieceColor;
-                delete cell.dataset.pieceSymbol; 
-                delete cell.dataset.hasMoved; 
+                delete cell.dataset.pieceSymbol;
+                delete cell.dataset.hasMoved;
             }
         }
     }
@@ -201,7 +197,7 @@ function resetGame() {
     selectedPiece = null;
     enPassantTarget = null;
     document.getElementById('turnDisplay').textContent = "Current Turn: White";
-    document.getElementById('startMenu').classList.remove('hidden'); 
+    document.getElementById('startMenu').classList.remove('hidden');
     document.getElementById('clockContainer').style.visibility = 'hidden';
     updateClocks();
     setupBoard();
@@ -212,7 +208,6 @@ function switchTurn() {
     updateClocks();
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
     const rows = document.querySelectorAll('.board tr:not(:first-child)');
     const turnDisplay = document.getElementById('turnDisplay');
@@ -220,16 +215,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetButton.addEventListener('click', resetGame);
     const startMenu = document.getElementById('startMenu');
-    const btnUntimed = document.getElementById('buttonUntimed');
-    const btnBlitz = document.getElementById('buttonBlitz');
+    const buttonUntimed = document.getElementById('buttonUntimed');
+    const buttonBlitz = document.getElementById('buttonBlitz');
     const forfeitButton = document.getElementById('forfeitButton');
 
-    btnUntimed.addEventListener('click', () => {
+    buttonUntimed.addEventListener('click', () => {
         isBlitz = false;
         startMenu.classList.add('hidden');
         document.getElementById('clockContainer').style.visibility = 'hidden';
     });
-    btnBlitz.addEventListener('click', () => {
+    buttonBlitz.addEventListener('click', () => {
         isBlitz = true;
         startMenu.classList.add('hidden');
         document.getElementById('clockContainer').style.visibility = 'visible';
@@ -278,16 +273,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (currentCell.dataset.pieceSymbol === 'k' || currentCell.dataset.pieceSymbol === 'K') {
                         const winner = currentTurn.charAt(0).toUpperCase() + currentTurn.slice(1);
                         alert(`Checkmate! ${winner} captured the King and wins the game!`);
-                        resetGame(); 
-                        return; 
+                        resetGame();
+                        return;
                     }
-            
-                    // --- EN PASSANT CAPTURE EXECUTION ---
+
                     if (pieceSymbol.toLowerCase() === 'p' && enPassantTarget && targetRow === enPassantTarget.row && targetCol === enPassantTarget.col) {
-                        // the ghost, find  real pawn right behind it and destroy it.
                         const enemyRow = (currentTurn === 'white') ? targetRow + 1 : targetRow - 1;
                         const enemyCell = rows[enemyRow].querySelectorAll('td')[targetCol];
+
                         enemyCell.innerHTML = '';
+
                         delete enemyCell.dataset.pieceColor;
                         delete enemyCell.dataset.pieceSymbol;
                     }
@@ -298,49 +293,44 @@ document.addEventListener('DOMContentLoaded', () => {
                             col: targetCol
                         };
                     } else {
-                        enPassantTarget = null; 
+                        enPassantTarget = null;
                     }
 
-                    // move piece logic
                     currentCell.innerHTML = selectedPiece.innerHTML;
                     currentCell.dataset.pieceColor = selectedPiece.dataset.pieceColor;
                     currentCell.dataset.pieceSymbol = selectedPiece.dataset.pieceSymbol;
-                    currentCell.dataset.hasMoved = 'true'; 
-                    
+                    currentCell.dataset.hasMoved = 'true';
+
                     selectedPiece.innerHTML = '';
                     delete selectedPiece.dataset.pieceColor;
                     delete selectedPiece.dataset.pieceSymbol;
-                    delete selectedPiece.dataset.hasMoved; 
+                    delete selectedPiece.dataset.hasMoved;
                     selectedPiece.classList.remove('selected');
                     selectedPiece = null;
 
-                    // castle execution
-                    // If the King just moved 2 squares
                     if (pieceSymbol.toLowerCase() === 'k' && Math.abs(selectedCol - targetCol) === 2) {
-                        const isKingside = targetCol > selectedCol; // right or left?
+                        const isKingside = targetCol > selectedCol;
                         const rookStartCol = isKingside ? 7 : 0;
-                        const rookEndCol = isKingside ? targetCol - 1 : targetCol + 1; // Put Rook next to King
-                        
+                        const rookEndCol = isKingside ? targetCol - 1 : targetCol + 1;
+
                         const oldRookCell = rows[targetRow].querySelectorAll('td')[rookStartCol];
                         const newRookCell = rows[targetRow].querySelectorAll('td')[rookEndCol];
-                        
-                        // tp the rook
+
                         newRookCell.innerHTML = oldRookCell.innerHTML;
                         newRookCell.dataset.pieceColor = oldRookCell.dataset.pieceColor;
                         newRookCell.dataset.pieceSymbol = oldRookCell.dataset.pieceSymbol;
                         newRookCell.dataset.hasMoved = 'true';
-                        
+
                         oldRookCell.innerHTML = '';
                         delete oldRookCell.dataset.pieceColor;
                         delete oldRookCell.dataset.pieceSymbol;
                         delete oldRookCell.dataset.hasMoved;
                     }
 
-                    // Pawn Promotion
                     if (currentCell.dataset.pieceSymbol === 'P' && targetRow === 0) {
                         currentCell.dataset.pieceSymbol = 'Q';
                         currentCell.innerHTML = `<img src="${pieces['Q']}" style="width: 45px; height: 45px; pointer-events: none;">`;
-                    } 
+                    }
                     else if (currentCell.dataset.pieceSymbol === 'p' && targetRow === 7) {
                         currentCell.dataset.pieceSymbol = 'q';
                         currentCell.innerHTML = `<img src="${pieces['q']}" style="width: 45px; height: 45px; pointer-events: none;">`;
