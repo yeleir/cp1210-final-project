@@ -20,77 +20,75 @@ let blackTime = 300;
 let timer = null;
 
 let selectedPiece = null;
-let selectedRow = null; 
-let selectedCol = null; 
+let selectedRow = null;
+let selectedCol = null;
 let currentTurn = 'white';
+let isBlitz = false;
 
-// --- COLLISION RADAR ---
-function isPathClear(startR, startCol, endR, endCol) {
-    const rowStep = (startR === endR) ? 0 : (endR > startR ? 1 : -1);
+function isPathClear(startRow, startCol, endRow, endCol) {
+    const rowStep = (startRow === endRow) ? 0 : (endRow > startRow ? 1 : -1);
     const colStep = (startCol === endCol) ? 0 : (endCol > startCol ? 1 : -1);
 
-    let currentRow = startR + rowStep;
+    let currentRow = startRow + rowStep;
     let currentCol = startCol + colStep;
-    
+
     const rows = document.querySelectorAll('.board tr:not(:first-child)');
 
-    while (currentRow !== endR || currentCol !== endCol) {
+    while (currentRow !== endRow || currentCol !== endCol) {
         const cells = rows[currentRow].querySelectorAll('td');
         if (cells[currentCol].textContent !== '') {
-            return false; // Path blocked!
+            return false;
         }
         currentRow += rowStep;
         currentCol += colStep;
     }
-    return true; // Path clear!
+    return true;
 }
 
-// --- THE BOUNCER ---
-function isValidMove(piece, startR, startCol, endR, endCol, isCapture, pieceColor) {
-    const rowDiff = Math.abs(startR - endR);
+function isValidMove(piece, startRow, startCol, endRow, endCol, isCapture, pieceColor) {
+    const rowDiff = Math.abs(startRow - endRow);
     const colDiff = Math.abs(startCol - endCol);
 
-    // 1. ROOK
     if (piece === '♜' || piece === '♖') {
-        if (startR === endR || startCol === endCol) return isPathClear(startR, startCol, endR, endCol);
+        if (startRow === endRow || startCol === endCol) return isPathClear(startRow, startCol, endRow, endCol);
         return false;
     }
-    // 2. BISHOP
+
     if (piece === '♝' || piece === '♗') {
-        if (rowDiff === colDiff) return isPathClear(startR, startCol, endR, endCol);
+        if (rowDiff === colDiff) return isPathClear(startRow, startCol, endRow, endCol);
         return false;
     }
-    // 3. QUEEN
+
     if (piece === '♛' || piece === '♕') {
-        if ((startR === endR || startCol === endCol) || (rowDiff === colDiff)) return isPathClear(startR, startCol, endR, endCol);
+        if ((startRow === endRow || startCol === endCol) || (rowDiff === colDiff)) return isPathClear(startRow, startCol, endRow, endCol);
         return false;
     }
-    // 4. KNIGHT
+
     if (piece === '♞' || piece === '♘') {
         return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
     }
-    // 5. KING
+
     if (piece === '♚' || piece === '♔') {
         return rowDiff <= 1 && colDiff <= 1;
     }
-    // 6. PAWN
+
     if (piece === '♟' || piece === '♙') {
         const direction = (pieceColor === 'white') ? -1 : 1;
         const startingRow = (pieceColor === 'white') ? 6 : 1;
 
         if (!isCapture && startCol === endCol) {
-            if (endR === startR + direction) return true;
-            if (startR === startingRow && endR === startR + (direction * 2)) return isPathClear(startR, startCol, endR, endCol); 
+            if (endRow === startRow + direction) return true;
+            if (startRow === startingRow && endRow === startRow + (direction * 2)) return isPathClear(startRow, startCol, endRow, endCol);
         }
-        if (isCapture && rowDiff === 1 && endR === startR + direction) {
+        if (isCapture && rowDiff === 1 && endRow === startRow + direction) {
             return true;
         }
-        return false; 
+        return false;
     }
     return false;
 }
 
-// --- TIMER FUNCTIONS ---
+
 function formatTime(t) {
     let minutes = Math.floor(t / 60);
     let seconds = t % 60;
@@ -112,25 +110,27 @@ function updateClocks() {
 
 function runTimer() {
     if (timer !== null) return;
-    timer = setInterval(function () {
-        if (currentTurn === "white") {
-            whiteTime = whiteTime - 1;
-            if (whiteTime <= 0) {
-                clearInterval(timer);
-                alert("Black wins on time");
+    if (isBlitz) {
+        timer = setInterval(function () {
+            if (currentTurn === "white") {
+                whiteTime = whiteTime - 1;
+                if (whiteTime <= 0) {
+                    clearInterval(timer);
+                    alert("Black wins on time");
+                }
+            } else {
+                blackTime = blackTime - 1;
+                if (blackTime <= 0) {
+                    clearInterval(timer);
+                    alert("White wins on time");
+                }
             }
-        } else {
-            blackTime = blackTime - 1;
-            if (blackTime <= 0) {
-                clearInterval(timer);
-                alert("White wins on time");
-            }
-        }
-        updateClocks();
-    }, 1000);
+            updateClocks();
+        }, 1000);
+    }
 }
 
-// --- GAME LOGIC FUNCTIONS ---
+
 function setupBoard() {
     const rows = document.querySelectorAll('.board tr:not(:first-child)');
     for (let i = 0; i < 8; i++) {
@@ -172,13 +172,36 @@ function switchTurn() {
     updateClocks();
 }
 
-// --- EVENT LISTENERS ---
+
 document.addEventListener('DOMContentLoaded', () => {
     const rows = document.querySelectorAll('.board tr:not(:first-child)');
     const turnDisplay = document.getElementById('turnDisplay');
     const resetButton = document.getElementById('resetButton');
 
     resetButton.addEventListener('click', resetGame);
+    const startMenu = document.getElementById('startMenu');
+    const btnUntimed = document.getElementById('buttonUntimed');
+    const btnBlitz = document.getElementById('buttonBlitz');
+    const forfeitButton = document.getElementById('forfeitButton');
+
+    btnUntimed.addEventListener('click', () => {
+        isBlitz = false;
+        startMenu.classList.add('hidden');
+        document.getElementById('clockContainer').style.visibility = 'hidden';
+    });
+    btnBlitz.addEventListener('click', () => {
+        isBlitz = true;
+        startMenu.classList.add('hidden');
+        document.getElementById('clockContainer').style.visibility = 'visible';
+    });
+
+    forfeitButton.addEventListener('click', () => {
+        const winner = (currentTurn === 'white') ? 'Black' : 'White';
+        alert(`${currentTurn.charAt(0).toUpperCase() + currentTurn.slice(1)} forfeits! ${winner} wins!`);
+        startMenu.classList.remove('hidden');
+        resetGame();
+    });
+
 
     for (let i = 0; i < 8; i++) {
         const cells = rows[i].querySelectorAll('td');
@@ -194,17 +217,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     const targetRow = i;
                     const targetCol = j;
 
-                    // Friendly fire check
+
                     if (currentCell.dataset.pieceColor === currentTurn) {
                         selectedPiece.classList.remove('selected');
                         selectedPiece = currentCell;
                         currentCell.classList.add('selected');
-                        selectedRow = i; // Update coordinates if switching pieces
+                        selectedRow = i;
                         selectedCol = j;
                         return;
                     }
 
-                    // Ask the Bouncer
+
                     const pieceSymbol = selectedPiece.textContent;
                     const isCapture = (currentCell.textContent !== '');
                     const pieceColor = selectedPiece.dataset.pieceColor;
@@ -212,10 +235,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!isValidMove(pieceSymbol, selectedRow, selectedCol, targetRow, targetCol, isCapture, pieceColor)) {
                         selectedPiece.classList.remove('selected');
                         selectedPiece = null;
-                        return; // Illegal move!
+                        return;
                     }
 
-                    // Move is legal: execute it
+
                     currentCell.textContent = selectedPiece.textContent;
                     currentCell.dataset.pieceColor = selectedPiece.dataset.pieceColor;
                     selectedPiece.textContent = '';

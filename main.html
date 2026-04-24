@@ -11,12 +11,21 @@
 
 <body>
     <div class="container">
-        <h2 id="turnDisplay" style="color: black; font-family: sans-serif;">Current Turn: White</h2>
+        <div id="startMenu" class="menu">
+            <h1 id="welcome">Welcome to Chess</h1>
+            <button id="buttonUntimed" class="menuButton">Untimed Game</button>
+            <button id="buttonBlitz" class="menuButton">Blitz Game</button>
+        </div>
+        <h2 id="turnDisplay">Current Turn: White</h2>
         <div id="clockContainer">
             <div id="whiteClock" class="clock active">05:00</div>
             <div id="blackClock" class="clock">05:00</div>
         </div>
-        <button id="resetButton">Restart Game</button>
+        <div id="buttonContainer">
+            <button id="resetButton">Restart</button>
+            <button id="forfeitButton">Forfeit</button>
+        </div>
+
         <table class="board">
             <tbody>
                 <tr>
