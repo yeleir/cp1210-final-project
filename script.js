@@ -1,7 +1,19 @@
 const pieces = {
-    r: '♜', n: '♞', b: '♝', q: '♛', k: '♚', p: '♟',
-    R: '♖', N: '♘', B: '♗', Q: '♕', K: '♔', P: '♙',
-    '': ''
+    r: 'images/black-rook.svg', 
+    n: 'images/black-knight.svg', 
+    b: 'images/black-bishop.svg', 
+    q: 'images/black-queen.svg', 
+    k: 'images/black-king.svg', 
+    p: 'images/black-pawn.svg',
+    
+    R: 'images/white-rook.svg', 
+    N: 'images/white-knight.svg', 
+    B: 'images/white-bishop.svg', 
+    Q: 'images/white-queen.svg', 
+    K: 'images/white-king.svg', 
+    P: 'images/white-pawn.svg',
+    
+    '': '' 
 };
 
 const initialBoard = [
@@ -36,7 +48,7 @@ function isPathClear(startRow, startCol, endRow, endCol) {
 
     while (currentRow !== endRow || currentCol !== endCol) {
         const cells = rows[currentRow].querySelectorAll('td');
-        if (cells[currentCol].textContent !== '') {
+        if (cells[currentCol].innerHTML !== '') {
             return false;
         }
         currentRow += rowStep;
@@ -49,30 +61,27 @@ function isValidMove(piece, startRow, startCol, endRow, endCol, isCapture, piece
     const rowDiff = Math.abs(startRow - endRow);
     const colDiff = Math.abs(startCol - endCol);
 
-    if (piece === '♜' || piece === '♖') {
+    const type = piece.toLowerCase(); 
+
+    if (type === 'r') {
         if (startRow === endRow || startCol === endCol) return isPathClear(startRow, startCol, endRow, endCol);
         return false;
     }
-
-    if (piece === '♝' || piece === '♗') {
+    if (type === 'b') {
         if (rowDiff === colDiff) return isPathClear(startRow, startCol, endRow, endCol);
         return false;
     }
-
-    if (piece === '♛' || piece === '♕') {
+    if (type === 'q') {
         if ((startRow === endRow || startCol === endCol) || (rowDiff === colDiff)) return isPathClear(startRow, startCol, endRow, endCol);
         return false;
     }
-
-    if (piece === '♞' || piece === '♘') {
+    if (type === 'n') {
         return (rowDiff === 2 && colDiff === 1) || (rowDiff === 1 && colDiff === 2);
     }
-
-    if (piece === '♚' || piece === '♔') {
+    if (type === 'k') {
         return rowDiff <= 1 && colDiff <= 1;
     }
-
-    if (piece === '♟' || piece === '♙') {
+    if (type === 'p') {
         const direction = (pieceColor === 'white') ? -1 : 1;
         const startingRow = (pieceColor === 'white') ? 6 : 1;
 
@@ -140,16 +149,20 @@ function setupBoard() {
             const cell = cells[j];
 
             cell.classList.remove('selected');
-            cell.textContent = pieces[symbol];
 
-            if (symbol !== '') {
+           if (symbol !== '') {
+                cell.innerHTML = `<img src="${pieces[symbol]}" style="width: 45px; height: 45px; pointer-events: none;">`;
+                cell.dataset.pieceSymbol = symbol;
+                
                 if (symbol === symbol.toUpperCase()) {
                     cell.dataset.pieceColor = 'white';
                 } else {
                     cell.dataset.pieceColor = 'black';
                 }
             } else {
+                cell.innerHTML = ''; 
                 delete cell.dataset.pieceColor;
+                delete cell.dataset.pieceSymbol; 
             }
         }
     }
@@ -230,8 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
 
-                    const pieceSymbol = selectedPiece.textContent;
-                    const isCapture = (currentCell.textContent !== '');
+                    const pieceSymbol = selectedPiece.dataset.pieceSymbol;
+                    const isCapture = (currentCell.innerHTML !== '');
                     const pieceColor = selectedPiece.dataset.pieceColor;
 
                     if (!isValidMove(pieceSymbol, selectedRow, selectedCol, targetRow, targetCol, isCapture, pieceColor)) {
@@ -241,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
 
 
-                    if (currentCell.textContent === '♚' || currentCell.textContent === '♔') {
+                    if (currentCell.dataset.pieceSymbol === 'k' || currentCell.dataset.pieceSymbol === 'K') {
                         const winner = currentTurn.charAt(0).toUpperCase() + currentTurn.slice(1);
                         alert(`Checkmate! ${winner} captured the King and wins the game!`);
                         resetGame(); 
@@ -249,10 +262,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
             
 
-                    currentCell.textContent = selectedPiece.textContent;
+
+                    currentCell.innerHTML = selectedPiece.innerHTML;
                     currentCell.dataset.pieceColor = selectedPiece.dataset.pieceColor;
-                    selectedPiece.textContent = '';
+                    currentCell.dataset.pieceSymbol = selectedPiece.dataset.pieceSymbol;
+                    
+
+                    selectedPiece.innerHTML = '';
                     delete selectedPiece.dataset.pieceColor;
+                    delete selectedPiece.dataset.pieceSymbol;
                     selectedPiece.classList.remove('selected');
                     selectedPiece = null;
 
@@ -260,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     switchTurn();
                     turnDisplay.textContent = `Current Turn: ${currentTurn.charAt(0).toUpperCase() + currentTurn.slice(1)}`;
 
-                } else if (currentCell.textContent !== '') {
+                } else if (currentCell.innerHTML !== '') {
                     if (currentCell.dataset.pieceColor === currentTurn) {
                         selectedPiece = currentCell;
                         selectedRow = i;
